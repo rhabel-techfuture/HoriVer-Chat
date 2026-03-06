@@ -6,6 +6,35 @@ client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 st.set_page_config(page_title="HoriVer", page_icon="🤖", layout="centered")
 
+css = """
+<style>
+.stApp { background-color: #0d0d0d; color: #ececec; }
+#MainMenu { visibility: hidden; }
+header { visibility: hidden; }
+footer { visibility: hidden; }
+[data-testid="stChatMessageAvatarUser"] { display: none !important; }
+[data-testid="stChatMessageAvatarAssistant"] { display: none !important; }
+[data-testid="stChatMessageUser"] {
+    background-color: #1e1e1e;
+    border-radius: 14px;
+    padding: 10px;
+    margin-left: 10%;
+    margin-bottom: 6px;
+}
+[data-testid="stChatMessageAssistant"] {
+    background-color: transparent;
+    padding: 10px;
+    margin-bottom: 6px;
+}
+.stChatInputContainer {
+    background-color: #1e1e1e !important;
+    border-radius: 14px !important;
+    border: 1px solid #333 !important;
+}
+</style>
+"""
+st.markdown(css, unsafe_allow_html=True)
+
 SYSTEM_PROMPT = {
     "role": "system",
     "content": (
@@ -22,7 +51,12 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 if not st.session_state.messages:
-    st.title("Apa yang bisa saya bantu?")
+    st.markdown("""
+    <div style='text-align:center; padding-top: 80px; padding-bottom: 40px;'>
+        <h1 style='color:#ffffff; font-size:2rem;'>Apa yang bisa saya bantu?</h1>
+        <p style='color:#888; font-size:0.9rem;'>HoriVer AI • by Rhabel</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
