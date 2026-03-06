@@ -19,9 +19,9 @@ st.markdown("""
 [data-testid="stChatMessageUser"] {
     background-color: #2f2f2f;
     border-radius: 16px;
-    padding: 12px;
+    padding: 16px;
     margin-left: 15%;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
 }
 [data-testid="stChatMessageAssistant"] {
     background-color: transparent;
