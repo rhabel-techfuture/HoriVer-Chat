@@ -15,16 +15,18 @@ footer { visibility: hidden; }
 [data-testid="stChatMessageAvatarUser"] { display: none !important; }
 [data-testid="stChatMessageAvatarAssistant"] { display: none !important; }
 [data-testid="stChatMessageUser"] {
-    background-color: #1e1e1e;
-    border-radius: 14px;
+    background-color: #005c4b;
+    border-radius: 12px;
     padding: 10px;
-    margin-left: 10%;
-    margin-bottom: 6px;
+    margin-left: 20%;
+    margin-bottom: 4px;
 }
 [data-testid="stChatMessageAssistant"] {
-    background-color: transparent;
+    background-color: #1e1e1e;
+    border-radius: 12px;
     padding: 10px;
-    margin-bottom: 6px;
+    margin-right: 20%;
+    margin-bottom: 4px;
 }
 .stChatInputContainer {
     background-color: #1e1e1e !important;
@@ -52,7 +54,7 @@ if "messages" not in st.session_state:
 
 if not st.session_state.messages:
     st.markdown("""
-    <div style='text-align:center; padding-top: 80px; padding-bottom: 40px;'>
+    <div style='text-align:center; padding-top:80px; padding-bottom:40px;'>
         <h1 style='color:#ffffff; font-size:2rem;'>Apa yang bisa saya bantu?</h1>
         <p style='color:#888; font-size:0.9rem;'>HoriVer AI • by Rhabel</p>
     </div>
@@ -70,17 +72,30 @@ if prompt := st.chat_input("Pesan ke HoriVer..."):
     api_messages = [SYSTEM_PROMPT] + st.session_state.messages
 
     with st.chat_message("assistant"):
-        with st.spinner("Menganalisa..."):
-            time.sleep(0.3)
-            try:
-                response = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
-                    messages=api_messages,
-                    max_tokens=2048
-                )
-                reply = response.choices[0].message.content
-            except Exception:
-                reply = "Maaf terjadi kesalahan, coba lagi!"
-        st.write(reply)
+        placeholder = st.empty()
+        placeholder.markdown("⬤ ⬤ ⬤")
+        
+        try:
+            full_reply = ""
+            stream = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=api_messages,
+                max_tokens=2048,
+                stream=True
+            )
+            
+            for chunk in stream:
+                content = chunk.choices[0].delta.content
+                if content:
+                    full_reply += content
+                    placeholder.markdown(full_reply + "▌")
+                    time.sleep(0.01)
+            
+            placeholder.markdown(full_reply)
+            reply = full_reply
+
+        except Exception:
+            reply = "Maaf terjadi kesalahan, coba lagi!"
+            placeholder.markdown(reply)
 
     st.session_state.messages.append({"role": "assistant", "content": reply})
